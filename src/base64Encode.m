@@ -22,7 +22,7 @@ function encodedData = base64Encode(inputData, urlmode)
     else
         encodedData = char(base64Alphabet(charIndex + 1));
         if paddingSize > 0
-            encodedData = [encodedData, '='];
+            encodedData = [encodedData, repelem('=', 1, paddingSize/2)];
         end
     end
 end
