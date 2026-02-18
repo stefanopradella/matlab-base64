@@ -1,16 +1,16 @@
 classdef FunctionalTests < matlab.unittest.TestCase
 
     properties
-        nrandomisedTestIterations = 1000;
-        maxBytesrandomisedTest = 1024;
+        nRandomisedTestIterations = 1000;
+        maxBytesRandomisedTest = 1024;
     end
 
     methods (Test)
 
         function randomisedEncoding(testCase)
 
-            for iIteration = 1:testCase.nrandomisedTestIterations
-                inputData = uint8(randi([0 2^8-1], 1, randi([1 testCase.maxBytesrandomisedTest])));
+            for iIteration = 1:testCase.nRandomisedTestIterations
+                inputData = uint8(randi([0 2^8-1], 1, randi([1 testCase.maxBytesRandomisedTest])));
                 result = base64Encode(inputData, false);
                 expectedValue = matlab.net.base64encode(inputData);
 
@@ -20,8 +20,8 @@ classdef FunctionalTests < matlab.unittest.TestCase
 
         function randomisedDecoding(testCase)
             
-            for iIteration = 1:testCase.nrandomisedTestIterations
-                inputData = uint8(randi([0 2^8-1], 1, randi([1 testCase.maxBytesrandomisedTest])));
+            for iIteration = 1:testCase.nRandomisedTestIterations
+                inputData = uint8(randi([0 2^8-1], 1, randi([1 testCase.maxBytesRandomisedTest])));
                 encodedData = matlab.net.base64encode(inputData);
 
                 result = base64Decode(encodedData, false);
