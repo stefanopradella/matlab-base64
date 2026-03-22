@@ -1,3 +1,6 @@
+% Test the performance of this implementation versus the matlab builtin
+% implementation. Test is performed on random data and multiple iterations.
+
 nIterations         =   10000;
 maxTestVectorSize   =   1024;
 
@@ -36,7 +39,7 @@ disp("===== DECODER =====")
 % Generate input
 inputData_encoder = cell(nIterations, 1);
 for iTestVector = 1:nIterations
-    inputData_decoder{iTestVector} = matlab.net.base64encode(uint8(randi([0 2^8-1], 1, randi([1 maxTestVectorSize]))));
+    inputData_decoder{iTestVector} = base64Encode(uint8(randi([0 2^8-1], 1, randi([1 maxTestVectorSize]))));
 end
 
 tic;
