@@ -5,37 +5,53 @@ function decodedData = base64Decode(inputData, urlmode)
         urlmode         (1, 1)      logical = false
     end
     
-    coder.varsize("decodedData", [1, Inf], true);
+    coder.varsize("decodedData", [1, Inf], [false true]);
 
-    base64DecodeTable       =   coder.const(uint8([zeros(1, 42), 63, zeros(1, 3), 64, 53:62, zeros(1, 7), 1:26, zeros(1, 6), 27:52]) - 1);
-    base64URLDecodeTable    =   coder.const(uint8([zeros(1, 44), 63, zeros(1, 2), 53:62, zeros(1, 7), 1:26, zeros(1, 4), 64, 0, 27:52]) - 1);
+    % Make the variable persistend and map to const for efficiency
+    persistent base64DecodeTable;
+    if isempty(base64DecodeTable)
+        base64DecodeTable = coder.const(getBase64DecodeTable());
+    end
+
+    inputSize = numel(inputData);
+    nBlocks = ceil(inputSize / 4);
 
     if urlmode
-        inputData = [inputData, repelem('=', 1, (ceil(size(inputData, 2)/4)*4) - size(inputData, 2))];
-        inputSize = size(inputData, 2);
-        decodedBytes = base64URLDecodeTable(inputData);
-        decodedData = uint8(zeros(1, ceil(inputSize*3/4)));
+        paddingLength = mod(4 - mod(inputSize, 4), 4);
+        inputData = [inputData, repelem('=', 1, paddingLength)];
     else
-        inputSize = size(inputData, 2);
-        decodedBytes = base64DecodeTable(inputData);
-        decodedData = uint8(zeros(1, inputSize*3/4));
+        paddingLength = sum(inputData(end-1:end) == '=');
     end
 
-    
-    for iBlock = 0:(inputSize/4)-1
-        startIdx_dec = iBlock*3;
-        startIdx_enc = iBlock*4;
-        decodedData(startIdx_dec + 1) = bitor(bitshift(decodedBytes(startIdx_enc + 1), 2), bitshift(decodedBytes(startIdx_enc + 2), -4));
-        decodedData(startIdx_dec + 2) = bitor(bitshift(decodedBytes(startIdx_enc + 2), 4), bitshift(decodedBytes(startIdx_enc + 3), -2));
-        decodedData(startIdx_dec + 3) = bitor(bitshift(decodedBytes(startIdx_enc + 3), 6), decodedBytes(startIdx_enc + 4));
-    end
+    decodedBytes = base64DecodeTable(inputData);
+
+    decodedBytes = reshape(decodedBytes, 4, nBlocks); % 4 rows, N columns
+
+    % Vectorized shift-or
+    decodedData = uint8(zeros(3, nBlocks));
+    decodedData(1, :) = bitor(bitshift(decodedBytes(1, :), 2), bitshift(decodedBytes(2, :), -4));
+    decodedData(2, :) = bitor(bitshift(decodedBytes(2, :), 4), bitshift(decodedBytes(3, :), -2));
+    decodedData(3, :) = bitor(bitshift(decodedBytes(3, :), 6), decodedBytes(4, :));
+
+    decodedData = decodedData(:)';
 
     % Remove padding
-    if inputData(end) == '='
-        if inputData(end-1) == '='
-            decodedData = decodedData(1:end-2);
-        else
-            decodedData = decodedData(1:end-1);
-        end
-    end
+    decodedData = decodedData(1:end-paddingLength);
+    
+end
+
+function base64DecodeTable = getBase64DecodeTable()
+
+    base64DecodeTable = uint8(zeros(1, 122));
+
+    % Standard Base64
+    base64DecodeTable(uint8('A':'Z'))   =   0:25;
+    base64DecodeTable(uint8('a':'z'))   =   26:51;
+    base64DecodeTable(uint8('0':'9'))   =   52:61;
+    base64DecodeTable(uint8('+'))       =   62;
+    base64DecodeTable(uint8('/'))       =   63;
+
+    %Base64URL characters
+    base64DecodeTable(uint8('-'))       =   62;
+    base64DecodeTable(uint8('_'))       =   63;
 end
