@@ -14,7 +14,7 @@ classdef FunctionalTests < matlab.unittest.TestCase
                 result = base64Encode(inputData, false);
                 expectedValue = matlab.net.base64encode(inputData);
 
-                testCase.verifyEqual(result, expectedValue);
+                testCase.assertEqual(result, expectedValue, sprintf("Test vector: %s", ['0x' reshape(dec2hex(inputData)', 1, [])]));
             end
         end
 
@@ -27,7 +27,7 @@ classdef FunctionalTests < matlab.unittest.TestCase
                 result = base64Decode(encodedData, false);
                 expectedValue = matlab.net.base64decode(encodedData);
 
-                testCase.verifyEqual(result, expectedValue);
+                testCase.assertEqual(result, expectedValue, sprintf("Test vector: %s", encodedData));
             end
         end
         
@@ -41,7 +41,7 @@ classdef FunctionalTests < matlab.unittest.TestCase
                 expectedValue = strrep(expectedValue, '/', '_');
                 expectedValue = strrep(expectedValue, '=', '');
 
-                testCase.verifyEqual(result, expectedValue);
+                testCase.assertEqual(result, expectedValue, sprintf("Test vector: %s", ['0x' reshape(dec2hex(inputData)', 1, [])]));
             end
         end
 
@@ -59,7 +59,7 @@ classdef FunctionalTests < matlab.unittest.TestCase
                 result = base64Decode(encodedDataURLMode, true);
                 expectedValue = matlab.net.base64decode(encodedData);
 
-                testCase.verifyEqual(result, expectedValue);
+                testCase.assertEqual(result, expectedValue, sprintf("Test vector: %s", encodedDataURLMode));
             end
         end
     end
