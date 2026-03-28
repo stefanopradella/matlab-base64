@@ -4,13 +4,11 @@ function decodedData = base64Decode(inputData, urlmode)
         inputData       (1, :)      char
         urlmode         (1, 1)      logical = false
     end
-    
-    coder.varsize("decodedData", [1, Inf], [false true]);
 
-    % Make the variable persistend and map to const for efficiency
+    % Make the variable persistent for efficiency
     persistent base64DecodeTable;
     if isempty(base64DecodeTable)
-        base64DecodeTable = coder.const(getBase64DecodeTable());
+        base64DecodeTable = getBase64DecodeTable();
     end
 
     inputSize = numel(inputData);

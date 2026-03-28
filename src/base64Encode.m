@@ -5,8 +5,6 @@ function encodedData = base64Encode(inputData, urlmode)
         urlmode         (1, 1)      logical = false
     end
 
-    coder.varsize("encodedData", [1, Inf], [false true]);
-
     % Make the variable persistent for efficiency.
     % At each function call check urlmode and eventually change the table
     % calling the function. The condition check is odd because persistent 
