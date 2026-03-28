@@ -1,7 +1,7 @@
 function decodedData = base64Decode(inputData, urlmode)
 %#codegen
     arguments
-        inputData       (1, :)      char
+        inputData       (1, :)      uint8
         urlmode         (1, 1)      logical = false
     end
 
@@ -14,11 +14,13 @@ function decodedData = base64Decode(inputData, urlmode)
     inputSize = numel(inputData);
     nBlocks = ceil(inputSize / 4);
 
+    % Handle padding. The value of '=' is expressed as a number to allow
+    % code generation
     if urlmode
         paddingLength = mod(4 - mod(inputSize, 4), 4);
-        inputData = [inputData, repelem('=', 1, paddingLength)];
+        inputData = [inputData, repelem(61, 1, paddingLength)];
     else
-        paddingLength = sum(inputData(end-1:end) == '=');
+        paddingLength = sum(inputData(end-1:end) == 61);
     end
 
     decodedBytes = base64DecodeTable(inputData);

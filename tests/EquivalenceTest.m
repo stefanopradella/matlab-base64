@@ -6,9 +6,9 @@ classdef EquivalenceTest < matlabtest.coder.TestCase
     end
 
     methods (Test)
-        function equivalenceTest(testCase)
+        function equivalenceTestEncoding(testCase)
 
-            inputTypes = cell(1, 1);
+            inputTypes = cell(1, 2);
             inputTypes{1} = coder.newtype("uint8", [Inf 1]);
             inputTypes{2} = coder.newtype("logical", [1 1]);
 
@@ -17,7 +17,24 @@ classdef EquivalenceTest < matlabtest.coder.TestCase
             for iIteration = 1:testCase.nRandomisedTestIterations
                 inputVector = uint8(randi([0 2^8-1], randi([1 testCase.maxBytesRandomisedTest]), 1));
 
-                executionResults = execute(testCase,buildResults, Inputs={inputVector, true});
+                executionResults = execute(testCase,buildResults, Inputs={inputVector, false});
+                verifyExecutionMatchesMATLAB(testCase,executionResults)
+            end
+        end
+
+        function equivalenceTestDecoding(testCase)
+
+            inputTypes = cell(1, 2);
+            inputTypes{1} = coder.newtype("uint8", [1 Inf]);
+            inputTypes{2} = coder.newtype("logical", [1 1]);
+
+            buildResults = build(testCase,"base64Decode",Inputs=inputTypes, Configuration=getCoderConfig());
+
+            for iIteration = 1:testCase.nRandomisedTestIterations
+                inputVector = uint8(randi([0 2^8-1], randi([1 testCase.maxBytesRandomisedTest]), 1));
+                inputString = uint8(matlab.net.base64encode(inputVector));
+
+                executionResults = execute(testCase,buildResults, Inputs={inputString, false});
                 verifyExecutionMatchesMATLAB(testCase,executionResults)
             end
         end
