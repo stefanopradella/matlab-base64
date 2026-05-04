@@ -1,11 +1,16 @@
 # matlab-base64
 
+[![View matlab-base64 on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://ch.mathworks.com/matlabcentral/fileexchange/183528-matlab-base64)
+
 This is a MATLAB implementation of base64 encoding and decoding functions, to be use instead of the builtin functions `matlab.net.base64encode` and `matlab.net.base64decode`.
 
 Compared to the builtin functions, this implementation:
 - Supports both standard base64 and base64URL protocols
 - Is faster thanks to the vectorized implementation
 - Is ready to generate C-code
+
+> **Note:** The GitHub repository is a mirror used to publish releases to MATLAB File Exchange.
+> For contributions, please open pull requests on the main repo on [Codeberg](https://codeberg.org/stefanopradella/matlab-base64).
 
 ## Performance
 The script `evalPerformance` can be used to compare the execution time of this implementation compared to the MATLAB builtin functions.
