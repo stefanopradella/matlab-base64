@@ -28,7 +28,7 @@ function decodedData = base64Decode(inputData, urlmode)
     decodedBytes = reshape(decodedBytes, 4, nBlocks); % 4 rows, N columns
 
     % Vectorized shift-or
-    decodedData = uint8(zeros(3, nBlocks));
+    decodedData = zeros(3, nBlocks, 'uint8');
     decodedData(1, :) = bitor(bitshift(decodedBytes(1, :), 2), bitshift(decodedBytes(2, :), -4));
     decodedData(2, :) = bitor(bitshift(decodedBytes(2, :), 4), bitshift(decodedBytes(3, :), -2));
     decodedData(3, :) = bitor(bitshift(decodedBytes(3, :), 6), decodedBytes(4, :));
@@ -42,7 +42,7 @@ end
 
 function base64DecodeTable = getBase64DecodeTable()
 
-    base64DecodeTable = uint8(zeros(1, 122));
+    base64DecodeTable = zeros(1, 122, 'uint8');
 
     % Standard Base64
     base64DecodeTable(uint8('A':'Z'))   =   0:25;

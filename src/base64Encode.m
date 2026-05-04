@@ -29,11 +29,11 @@ function encodedData = base64Encode(inputData, urlmode)
 
     nBlocks = ceil(inputSize / 3);
 
-    inputData = [inputData, uint8(zeros(1, paddingLength))];
+    inputData = [inputData, zeros(1, paddingLength, 'uint8')];
     inputData = reshape(inputData', 3, nBlocks);
     
 
-    inputBytes = uint8(zeros(4, nBlocks));
+    inputBytes = zeros(4, nBlocks, 'uint8');
     inputBytes(1, :) = bitshift(inputData(1, :), -2);
     inputBytes(2, :) = bitor(bitshift(bitand(inputData(1, :), uint8(3)), 4), bitshift(inputData(2, :), -4));
     inputBytes(3, :) = bitor(bitshift(bitand(inputData(2, :), uint8(15)), 2), bitshift(inputData(3, :), -6));
@@ -52,7 +52,7 @@ end
 
 function getBase64AlphabetTable = getBase64AlphabetTable(urlmode)
 
-    getBase64AlphabetTable = char(zeros(1, 64));
+    getBase64AlphabetTable = char(zeros(1, 64, 'uint8'));
 
     % Standard Base64
     getBase64AlphabetTable(1:26)    =   uint8('A':'Z');
